@@ -1,0 +1,10 @@
+#!/bin/bash
+
+APP_DIR=/srv/sites/mapi
+
+export NODE_PORT="3000"
+export NODE_ENV="production"
+
+cd $APP_DIR
+
+exec npm start
