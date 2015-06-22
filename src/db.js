@@ -24,15 +24,26 @@ function disconnect() {
   mongoose.disconnect();
 }
 
-/*var UserSchema = new Schema({
-  email: { type: String, trim: true, unique: true },
-  hash: { type: String },
-  apikey: { type: String },
-  hosts: [{ type: String }]
-});*/
+var ArticleSchema = new Schema({
+  caption: { type: String },
+  img_url: { type: String },
+  module: { type: String },
+  section: { type: String },
+  source: { type: String, trim: true },
+  summary: { type: String },
+  title: { type: String },
+  created_at: { type: Date, default: Date.now },
+  url: { type: String }
+});
+
+var NewsSchema = new Schema({
+  articles: [ArticleSchema],
+  created_at: { type: Date, default: Date.now }
+});
 
 module.exports = {
-  //User: mongoose.model('Hash', UserSchema),
+  Article: mongoose.model('Article', ArticleSchema),
+  News: mongoose.model('News', NewsSchema),
   connect,
   disconnect
 };

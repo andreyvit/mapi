@@ -15,6 +15,7 @@ import mail from './mail';
 import logger from './logger';
 import { connect } from './db';
 import routes from './routes/index';
+import news from './get/news';
 
 debug('mapi-node:server');
 
@@ -42,6 +43,8 @@ app.use(log4js.connectLogger(logger, { level: log4js.levels.DEBUG }));
 connect();
 mongoose.connection.on('error', logger.error);
 mongoose.connection.on('disconnected', connect);
+
+news.init();
 
 // Configure routes
 app.use('/', routes);
