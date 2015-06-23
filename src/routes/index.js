@@ -26,9 +26,9 @@ async function news(req, res, next) {
 
   if (site != 'all' && siteNames.indexOf(site) == -1) {
     // unprocessable, throw correct response code
-    res
-      .status(422)
-      .send({ error: `Invalid query argument, site '${site}' not allowed` });
+    var err = new Error(`Invalid query argument, site '${site}' not allowed`);
+    err.status = 422;
+    return next(err);
   }
   else {
     if (site != 'all') {
@@ -38,9 +38,9 @@ async function news(req, res, next) {
 
   if (modules.indexOf(moduleName) == -1) {
     // unprocessable, throw correct response code
-    res
-      .status(422)
-      .send({ error: `Invalid query argument, module '${moduleName}' not allowed` });
+    var err = new Error(`Invalid query argument, module '${module_name}' not allowed`);
+    err.status = 422;
+    return next(err);
   }
   else {
     mongoFilter.module = moduleName;
@@ -51,7 +51,8 @@ async function news(req, res, next) {
   try {
     news = await Article.find(mongoFilter).sort({ created_at: -1 }).exec();
   } catch(err) {
-    res.status(500).send({ error: err });
+    var err = new Error(err);
+    err.status = 500;
   }
   res.json(news);
 }
