@@ -1,7 +1,6 @@
 'use strict';
 
 import path from 'path';
-//import debug from 'debug';
 
 import morgan from 'morgan';
 import log4js from 'log4js';
@@ -13,18 +12,20 @@ import cookieParser from 'cookie-parser';
 
 import mail from './mail';
 import logger from './logger';
+import news from './get/news';
 import { connect } from './db';
 import routes from './routes/index';
-import news from './get/news';
-
-//debug('mapi-node:server');
+import { node_https } from '../config';
 
 var app = express();
-app.http().io();
+if (node_https) {
+  app.https(node_https).io();
+} else {
+  app.http().io();
+}
 
 var BASE_DIR = path.dirname(__dirname);
 
-// view engine setup
 app.set('views', path.join(BASE_DIR, 'views'));
 app.set('view engine', 'jade');
 
@@ -33,12 +34,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// Static stuff
 app.use(express.static(path.join(BASE_DIR, 'public')));
-//app.use(express.static(path.join(BASE_DIR, 'node_modules')));
-
-// Logger
 app.use(log4js.connectLogger(logger, { level: log4js.levels.DEBUG }));
 
 connect();
@@ -47,15 +43,7 @@ mongoose.connection.on('disconnected', connect);
 
 news.init(app);
 
-// Configure routes
 app.use('/', routes);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
 
 // development error handler
 // will print stacktrace
@@ -109,7 +97,6 @@ var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 app.listen(port);
-//debug('Listening on http://localhost:' + port);
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
