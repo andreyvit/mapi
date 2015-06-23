@@ -69,7 +69,7 @@ async function news(req, res, next) {
     err.status = 500;
   }
 
-  res.json(news);
+  res.json({ articles: news });
 }
 
 module.exports = router;
