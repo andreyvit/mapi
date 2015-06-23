@@ -93,9 +93,42 @@ app.on('close', function () {
   mongoose.disconnect();
 });
 
-var port = normalizePort(process.env.PORT || '5000');
+app.on('error', function(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      logger.error(`${bind} requires elevated privileges`);
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      logger.error(`${bind} is already in use`);
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+});
+
+app.on('listening', function() {
+  var addr = app.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  logger.debug('[SERVER] Listening on ' + bind);
+});
+
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+logger.debug(`[SERVER] Environment: ${app.get('env')}`);
 app.listen(port);
 
 function normalizePort(val) {
