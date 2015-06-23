@@ -27,7 +27,7 @@ var BASE_DIR = path.dirname(__dirname);
 app.set('views', path.join(BASE_DIR, 'views'));
 app.set('view engine', 'jade');
 
-//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(favicon(path.join(BASE_DIR, '/public/favicon.ico')));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -83,13 +83,14 @@ app.use(function(err, req, res, next) {
   Stacktrace: ${err.stack}`;
 
   mail.transporter.sendMail(mail.mailOptions, function(error, info) {
-    logger.error(error);
+    if (error) logger.error(error);
+    if (mail.type == 'stub') logger.info(info.response.toString());
   });
 
   res.status(err.status || 500);
-  res.render('error', {
+  res.json({
     message: err.message,
-    error: {}
+    error: err
   });
 });
 

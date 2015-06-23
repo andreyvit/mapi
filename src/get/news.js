@@ -14,7 +14,6 @@ function init(timeout=default_timeout) {
 }
 
 async function get_news_articles() {
-
   let resp;
   try {
     resp = await Promise.all([for (site of sites) getAsync(`http://${site}/sports/json`)]);
@@ -23,8 +22,12 @@ async function get_news_articles() {
     return;
   }
 
-  // Wait until we get the responses to clear the articles
-  clearArticles();
+  logger.info('Removing all articles from mongodb ...');
+  try {
+    await Article.remove().exec();
+  } catch (err) {
+    logger.error(err);
+  }
 
   for (let i = 0; i < resp.length; i++) {
     let site = stripHost(resp[i].response.request.host);
@@ -67,16 +70,6 @@ async function get_news_articles() {
     }
   }
   logger.info('Saved new batch of news articles!');
-}
-
-async function clearArticles() {
-  logger.info('Removing all articles from mongodb ...');
-  try {
-    await Article.remove().exec();
-  } catch (err) {
-    logger.error(err);
-    return;
-  }
 }
 
 module.exports = {

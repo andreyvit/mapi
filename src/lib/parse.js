@@ -24,9 +24,6 @@ function stripHost(testUrl) {
     // Remove the domain from the end of the url
     return hostname.replace(/\.[\w]+$/, '').replace(/^www\./, '');
   }
-  else {
-    return ''
-  }
 }
 
 module.exports = {
