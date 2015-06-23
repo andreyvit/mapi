@@ -16,7 +16,6 @@ var default_timeout = 20 * 60 * 1000;
   * @param {Number} [timeout] Time between downloading new articles in milliseconds
   */
 function init(app, timeout=default_timeout) {
-  let name = 'news';
   getNewsArticles(app);
   createSocketRoute(app);
   setTimeout(function() { getNewsArticles(app) }, timeout);
