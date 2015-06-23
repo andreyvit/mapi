@@ -32,6 +32,7 @@ async function get_news_articles() {
 
     for (let i = 0; i < data.primary_modules.length; i++) {
       let module = data.primary_modules[i];
+      module.name = module.name.replace(`${site}-`, '');
 
       if (modules.indexOf(module.name) == -1) {
         //logger.warn(`Found '${module.name}' which is not in the list of modules we want, skipping ...`);
