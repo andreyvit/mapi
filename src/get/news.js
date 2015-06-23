@@ -2,7 +2,7 @@
 
 import logger from  '../logger';
 import getAsync from '../lib/promise';
-import { Article, News } from '../db';
+import { Article } from '../db';
 import { sites, modules } from '../lib/constant';
 
 var default_timeout = 20 * 60 * 1000;
@@ -13,14 +13,6 @@ function init(timeout=default_timeout) {
 }
 
 async function get_news_articles() {
-  logger.info('Removing news from mongodb ...');
-  try {
-    await News.remove().exec();
-  } catch (err) {
-    logger.error(err);
-    return;
-  }
-
   logger.info('Removing all articles from mongodb ...');
   try {
     await Article.remove().exec();
@@ -37,7 +29,6 @@ async function get_news_articles() {
     return;
   }
 
-  let news = new News();
   for (let i = 0; i < resp.length; i++) {
     let site = resp[i].response.request.host;
     let data = JSON.parse(resp[i].body);
@@ -61,20 +52,21 @@ async function get_news_articles() {
           caption: content.caption,
           img_url: content.photo.crops.small_crop || undefined,
           module: module.name,
-          section: content.taxonomy.subsection || undefined,
+          section: content.taxonomy.section || undefined,
+          subsection: content.taxonomy.subsection || undefined,
           source: site,
           summary: content.summary,
           title: content.headline,
           url: content.pageurl.shortUrl || undefined
         });
-        news.articles.push(article);
+
+        try {
+          await article.save();
+        } catch (err) {
+          logger.error(err);
+        }
       }
     }
-  }
-  try {
-    await news.save();
-  } catch (err) {
-    logger.error(err);
   }
   logger.info('Saved new batch of news articles!');
 }

@@ -29,6 +29,7 @@ var ArticleSchema = new Schema({
   img_url: { type: String },
   module: { type: String },
   section: { type: String },
+  subsection: { type: String },
   source: { type: String, trim: true },
   summary: { type: String },
   title: { type: String },
@@ -36,14 +37,8 @@ var ArticleSchema = new Schema({
   url: { type: String }
 });
 
-var NewsSchema = new Schema({
-  articles: [ArticleSchema],
-  created_at: { type: Date, default: Date.now }
-});
-
 module.exports = {
   Article: mongoose.model('Article', ArticleSchema),
-  News: mongoose.model('News', NewsSchema),
   connect,
   disconnect
 };

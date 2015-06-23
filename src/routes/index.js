@@ -4,7 +4,7 @@ import express from 'express';
 
 import logger from  '../logger';
 import getAsync from '../lib/promise';
-import { News, Article } from '../db';
+import { Article } from '../db';
 import { sites, modules } from '../lib/constant';
 
 var router = express.Router();
@@ -36,11 +36,11 @@ async function news(req, res, next) {
 
   let news;
   try {
-    news = await News.find().sort({ created_at: -1 }).limit(1).exec();
+    news = await Article.find().sort({ created_at: -1 }).exec();
   } catch(err) {
     res.status(500).send({ error: err });
   }
-  res.json(news[0]);
+  res.json(news);
 }
 
 module.exports = router;
