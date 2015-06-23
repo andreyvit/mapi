@@ -8,12 +8,44 @@ import { stripHost } from '../lib/parse';
 
 var default_timeout = 20 * 60 * 1000;
 
-function init(timeout=default_timeout) {
-  get_news_articles();
-  setTimeout(function() { get_news_articles() }, timeout);
+/**
+  * Initializes an infinite loop that will continue to download new news articles
+  * which will repeat based on the timeout
+  *
+  * @param {Object} [app] The express app instance
+  * @param {Number} [timeout] Time between downloading new articles in milliseconds
+  */
+function init(app, timeout=default_timeout) {
+  let name = 'news';
+  getNewsArticles(app);
+  createSocketRoute(app);
+  setTimeout(function() { getNewsArticles(app) }, timeout);
 }
 
-async function get_news_articles() {
+/**
+  * Creates a socket route that clients can `emit` to get news articles
+  *
+  * @param {Object} [app] The express app instance
+  */
+function createSocketRoute(app) {
+  app.io.route('get_articles', async function(req) {
+    let articles;
+    try {
+      articles = await Article.find(req.data).exec();
+    } catch (err) {
+      logger.error(err);
+    }
+    req.io.emit('got_articles', { articles, filters: req.data });
+  });
+}
+
+/**
+ * Downloads all news articles from our news sites, removes old articles,
+ * parses, and then saves the data
+ *
+ * @param {Object} [app] The express app instance
+ */
+async function getNewsArticles(app) {
   let resp;
   try {
     resp = await Promise.all([for (site of sites) getAsync(`http://${site}/sports/json`)]);
@@ -29,6 +61,7 @@ async function get_news_articles() {
     logger.error(err);
   }
 
+  var articles = [];
   for (let i = 0; i < resp.length; i++) {
     let site = stripHost(resp[i].response.request.host);
     let data = JSON.parse(resp[i].body);
@@ -60,6 +93,7 @@ async function get_news_articles() {
           title: content.headline,
           url: content.pageurl.shortUrl || undefined
         });
+        articles.push(article);
 
         try {
           await article.save();
@@ -69,10 +103,12 @@ async function get_news_articles() {
       }
     }
   }
+  app.io.broadcast('new_articles', { articles });
   logger.info('Saved new batch of news articles!');
 }
 
 module.exports = {
   init,
-  get_news_articles
+  getNewsArticles,
+  createSocketRoute
 };

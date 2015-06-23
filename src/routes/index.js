@@ -10,10 +10,14 @@ import { stripHost } from '../lib/parse';
 
 var router = express.Router();
 
-router.get('/', news);
-router.get('/:site/', news);
-router.get('/:site/:section/', news);
-router.get('/:site/:section/:moduleName/', news);
+router.get('/news/', news);
+router.get('/news/:site/', news);
+router.get('/news/:site/:section/', news);
+router.get('/news/:site/:section/:moduleName/', news);
+
+router.get('/test_socket/', function(req, res, next) {
+  res.render('test_socket');
+});
 
 async function news(req, res, next) {
   let siteNames = [for (site of sites) if (site) stripHost(site)];
@@ -44,7 +48,7 @@ async function news(req, res, next) {
 
   let news;
   try {
-    news = await Article.find(mongoFilter).sort({ created_at: -1 }).exec();
+    news = await Article.find(mongoFilter).exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;

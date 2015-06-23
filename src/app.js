@@ -1,12 +1,12 @@
 'use strict';
 
 import path from 'path';
-import debug from 'debug';
+//import debug from 'debug';
 
 import morgan from 'morgan';
 import log4js from 'log4js';
 import mongoose from 'mongoose';
-import express from 'express';
+import express from 'express.io';
 import favicon from 'serve-favicon';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -17,9 +17,10 @@ import { connect } from './db';
 import routes from './routes/index';
 import news from './get/news';
 
-debug('mapi-node:server');
+//debug('mapi-node:server');
 
 var app = express();
+app.http().io();
 
 var BASE_DIR = path.dirname(__dirname);
 
@@ -44,7 +45,7 @@ connect();
 mongoose.connection.on('error', logger.error);
 mongoose.connection.on('disconnected', connect);
 
-news.init();
+news.init(app);
 
 // Configure routes
 app.use('/', routes);
@@ -108,7 +109,7 @@ var port = normalizePort(process.env.PORT || '5000');
 app.set('port', port);
 
 app.listen(port);
-debug('Listening on http://localhost:' + port);
+//debug('Listening on http://localhost:' + port);
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
