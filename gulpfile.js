@@ -9,6 +9,7 @@ var gutil = require('gulp-util');
 var babel = require('gulp-babel');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
+var mocha = require('gulp-mocha');
 
 var babelify = require("babelify");
 var browserify = require('browserify');
@@ -21,6 +22,8 @@ var config = require('./config');
 
 var jsSrc = './public/js/src/';
 var jsBundle = ['index.js'];
+
+var testFiles = './tests/**/*.js';
 
 gulp.task('sass', function() {
   var cssSrc = './public/scss/';
@@ -71,6 +74,11 @@ gulp.task('babel', function() {
   return gulp.src(src)
     .pipe(babel({ stage: 0, optional: ['runtime'] }))
     .pipe(gulp.dest(dist));
+});
+
+gulp.task('mocha', function() {
+  return gulp.src(testFiles, { read: false })
+    .pipe(mocha());
 });
 
 gulp.task('default', ['sass', 'babel', 'browserify']);

@@ -4,6 +4,7 @@ import logger from  '../logger';
 import getAsync from '../lib/promise';
 import { Article } from '../db';
 import { sites, modules } from '../lib/constant';
+import { stripHost } from '../lib/parse';
 
 var default_timeout = 20 * 60 * 1000;
 
@@ -13,13 +14,6 @@ function init(timeout=default_timeout) {
 }
 
 async function get_news_articles() {
-  logger.info('Removing all articles from mongodb ...');
-  try {
-    await Article.remove().exec();
-  } catch (err) {
-    logger.error(err);
-    return;
-  }
 
   let resp;
   try {
@@ -29,8 +23,11 @@ async function get_news_articles() {
     return;
   }
 
+  // Wait until we get the responses to clear the articles
+  clearArticles();
+
   for (let i = 0; i < resp.length; i++) {
-    let site = resp[i].response.request.host;
+    let site = stripHost(resp[i].response.request.host);
     let data = JSON.parse(resp[i].body);
 
     for (let i = 0; i < data.primary_modules.length; i++) {
@@ -69,6 +66,16 @@ async function get_news_articles() {
     }
   }
   logger.info('Saved new batch of news articles!');
+}
+
+async function clearArticles() {
+  logger.info('Removing all articles from mongodb ...');
+  try {
+    await Article.remove().exec();
+  } catch (err) {
+    logger.error(err);
+    return;
+  }
 }
 
 module.exports = {
