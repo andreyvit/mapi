@@ -1,10 +1,9 @@
 {
-  "name": "dashbeat",
+  "name": "mapi",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node --harmony ./dist/app.js",
-    "istart": "iojs --es_staging ./dist/app.js"
+    "start": "node --harmony ./dist/app.js"
   },
   "dependencies": {
     "babel": "^5.2.17",
