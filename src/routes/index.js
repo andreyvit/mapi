@@ -21,7 +21,7 @@ async function news(req, res, next) {
 
   let site = req.params.site || 'all';
   // let section = req.params.section || 'all';
-  let moduleName = req.params.moduleName || 'hero';
+  let moduleName = req.params.moduleName || 'all';
   let mongoFilter = {};
 
   if (site != 'all' && siteNames.indexOf(site) == -1) {
@@ -30,24 +30,21 @@ async function news(req, res, next) {
     err.status = 422;
     return next(err);
   }
-  else {
-    if (site != 'all') {
+  else if (site != 'all') {
       mongoFilter.source = site;
-    }
   }
 
-  if (modules.indexOf(moduleName) == -1) {
+  if (moduleName != 'all' && modules.indexOf(moduleName) == -1) {
     // unprocessable, throw correct response code
     var err = new Error(`Invalid query argument, module '${module_name}' not allowed`);
     err.status = 422;
     return next(err);
   }
-  else {
+  else if (moduleName != 'all') {
     mongoFilter.module = moduleName;
   }
 
   let news;
-  console.log(mongoFilter);
   try {
     news = await Article.find(mongoFilter).sort({ created_at: -1 }).exec();
   } catch(err) {
