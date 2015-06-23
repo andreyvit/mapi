@@ -1,6 +1,7 @@
 'use strict';
 
 import express from 'express';
+import _each from 'lodash/collection/forEach';
 
 import logger from  '../logger';
 import getAsync from '../lib/promise';
@@ -17,30 +18,48 @@ router.get('/:site/:section/:moduleName/', news);
 
 async function news(req, res, next) {
   let siteNames = [for (site of sites) if (site) stripHost(site)];
-  let site = req.params.site || 'all';
+
+  let requestedSites = 'site' in req.params ? req.params.site.split(',') : siteNames;
   // let section = req.params.section || 'all';
-  let moduleName = req.params.moduleName || 'all';
+  let moduleNames = 'moduleName' in req.params ? req.params.moduleName.split(',') : modules;
   let mongoFilter = {};
 
-  if (site != 'all' && siteNames.indexOf(site) == -1) {
-    // unprocessable, throw correct response code
-    var err = new Error(`Invalid query argument, site '${site}' not allowed`);
-    err.status = 422;
-    return next(err);
-  }
-  else if (site != 'all') {
-      mongoFilter.source = site;
+  // Parse the sites params
+  let invalidSites = [];
+  _each(requestedSites, (site) => {
+    if (siteNames.indexOf(site) == -1) {
+      invalidSites.push(site)
+    }
+  });
+
+  if (invalidSites.length) {
+      // unprocessable, throw correct response code
+      let sites = invalidSites.join(', ');
+      var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
+      err.status = 422;
+      return next(err);
   }
 
-  if (moduleName != 'all' && modules.indexOf(moduleName) == -1) {
+  mongoFilter.source = { $in: requestedSites };
+
+  // Parse the moduleName param
+  let invalidModules = [];
+  _each(moduleNames, function(moduleName) {
+    if (modules.indexOf(moduleName) == -1) {
+      invalidModules.push(moduleName);
+    }
+  });
+
+  if (invalidModules.length) {
     // unprocessable, throw correct response code
-    var err = new Error(`Invalid query argument, module '${module_name}' not allowed`);
+    let invalidModuleNames = invalidModules.join(', ');
+    var err = new Error(`Invalid query argument, module '${invalidModuleNames}' not allowed`);
     err.status = 422;
     return next(err);
   }
-  else if (moduleName != 'all') {
-    mongoFilter.module = moduleName;
-  }
+
+  console.log(moduleNames);
+  mongoFilter.module = { $in: moduleNames };
 
   let news;
   try {
