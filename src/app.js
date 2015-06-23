@@ -19,8 +19,10 @@ import { node_https } from '../config';
 
 var app = express();
 if (node_https) {
+  logger.debug('[SERVER] USING HTTPS');
   app.https(node_https).io();
 } else {
+  logger.debug('[SERVER] USING HTTP');
   app.http().io();
 }
 
@@ -83,13 +85,21 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+logger.debug(`[SERVER] Environment: ${app.get('env')}`);
+app.listen(port, '0.0.0.0', function() {
+  logger.debug(`[SERVER]: ${this.address().address}:${this.address().port}`);
+});
+
 process.on('SIGTERM', function () {
-  logger.info("Closing nodejs application ...");
+  logger.debug("[SERVER] Closing nodejs application ...");
   app.close();
 });
 
 app.on('close', function () {
-  logger.info("Closed nodejs application, disconnecting mongodb ...");
+  logger.debug("[SERVER] Closed nodejs application, disconnecting mongodb ...");
   mongoose.disconnect();
 });
 
@@ -124,12 +134,6 @@ app.on('listening', function() {
     : 'port ' + addr.port;
   logger.debug('[SERVER] Listening on ' + bind);
 });
-
-var port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-logger.debug(`[SERVER] Environment: ${app.get('env')}`);
-app.listen(port);
 
 function normalizePort(val) {
   var port = parseInt(val, 10);
