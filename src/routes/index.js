@@ -22,23 +22,24 @@ async function news(req, res, next) {
 
   if (site != 'all' && sites.indexOf(site) == -1) {
     // unprocessable, throw correct response code
-    res
-      .status(422)
-      .send({ error: `Invalid query argument, site '${site}' not allowed` });
+    var err = new Error(`Invalid query argument, site '${site}' not allowed`);
+    err.status = 422;
+    return next(err);
   }
 
   if (modules.indexOf(module_name) == -1) {
     // unprocessable, throw correct response code
-    res
-      .status(422)
-      .send({ error: `Invalid query argument, module '${module_name}' not allowed` });
+    var err = new Error(`Invalid query argument, module '${module_name}' not allowed`);
+    err.status = 422;
+    return next(err);
   }
 
   let news;
   try {
     news = await Article.find().sort({ created_at: -1 }).exec();
   } catch(err) {
-    res.status(500).send({ error: err });
+    var err = new Error(err);
+    err.status = 500;
   }
   res.json(news);
 }
