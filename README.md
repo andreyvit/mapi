@@ -2,8 +2,7 @@
 
 ## Dependencies
 * [Nodejs](http://nodejs.org) (> 0.11.2, for harmony support)
-* [Grunt](http://gruntjs.com)
-* [Bower](http://bower.io)
+* [Gulp](http://gulpjs.com/)
 * [MongoDB](http://www.mongodb.org/)
 
 ### Optional
@@ -12,9 +11,8 @@
 ## Install
 ### Node stuff
 ```bash
-npm install -g gulp bower babel browserify
+npm install -g gulp
 npm install
-bower install
 gulp
 ```
 
@@ -44,20 +42,29 @@ ln -sfv /usr/local/opt/mongodb/*.plist ~/Library/LaunchAgent
 
 ## Run
 ```bash
-# Node
 npm start
-
-# iojs
-npm run istart
+# or
+node --harmony ./dist/app.js
 ```
 
-#### Docker
+## Environmental Variables
+* NODE_ENV, 'production' or 'development', default development
+* NODE_PORT, the port number to run the server over, default 3000
+* LOG_LEVEL, the level to output log messages,
+levels can only output levels ahead of itself (TRACE -> DEBUG -> INFO -> WARN -> ERROR -> FATAL), default DEBUG
+
+```bash
+NODE_ENV=production npm start
+NODE_PORT=1337 LOG_LEVEL=WARN npm start
 ```
+
+#### Docker (optional)
+```bash
 docker build -t mapi/app .
 docker run -d -p 5000:5000 -v /Users/dev/mapi:/srv --name mapi mapi/app
 ```
 
-Opens at `http://localhost:5000`
+Open at `http://localhost:3000`
 
 ## Credits
 * Eric Bower [https://github.com/neurosnap](https://github.com/neurosnap)
