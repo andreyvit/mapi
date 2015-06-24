@@ -4,10 +4,14 @@ printer(){
   printf '=%.0s' {1..40} && printf '\n'
 }
 
-print "Grabbing latest source ..."
-git pull origin master
+APP_DIR="/srv/sites/mapi"
+
+cd $APP_DIR
 
 printer "Deploying mapi web app ..."
+
+printer "Grabbing latest source ..."
+git pull origin master
 
 printer "Installing node modules ..."
 npm install
