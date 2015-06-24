@@ -1,4 +1,4 @@
-# Michigan API - Node
+# Michigan API - Node [![Build Status](http://ci.renvy.com/job/mapi/badge/icon)](http://ci.renvy.com/job/mapi/)
 
 ## Dependencies
 * [Nodejs](http://nodejs.org) (> 0.11.2, for harmony support)
@@ -13,7 +13,6 @@
 ```bash
 npm install -g gulp
 npm install
-gulp
 ```
 
 ### [MongoDB (OSX)](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
@@ -41,6 +40,11 @@ ln -sfv /usr/local/opt/mongodb/*.plist ~/Library/LaunchAgent
 * Create a config.js, copy the example file which is located `./config_default.js`
 
 ## Run
+You must build the JS and CSS on every update
+```bash
+gulp
+```
+
 ```bash
 npm start
 # or
