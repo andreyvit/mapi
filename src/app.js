@@ -18,13 +18,13 @@ import routes from './routes/index';
 import { node_https } from '../config';
 
 var app = express();
-if (node_https) {
+/*if (node_https) {
   logger.debug('[SERVER] USING HTTPS');
   app.https(node_https).io();
-} else {
+} else {*/
   logger.debug('[SERVER] USING HTTP');
   app.http().io();
-}
+//}
 
 var BASE_DIR = path.dirname(__dirname);
 
