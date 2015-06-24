@@ -70,12 +70,12 @@ async function getNewsArticles(app) {
       module.name = module.name.replace(`${site}-`, '');
 
       if (modules.indexOf(module.name) == -1) {
-        //logger.warn(`Found '${module.name}' which is not in the list of modules we want, skipping ...`);
+        logger.debug(`Found '${module.name}' which is not in the list of modules we want, skipping ...`);
         continue;
       }
 
       if (!('contents' in module)) {
-        logger.warn('Could not find contents list in module ${module.name}, skipping ...');
+        logger.debug('Could not find contents list in module ${module.name}, skipping ...');
         continue;
       }
 

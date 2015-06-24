@@ -10,12 +10,14 @@ module.exports = {
       type: 'console'
     }, {
       type: 'file',
-      filename: path.join(path.dirname(__dirname), 'express.log'),
+      filename: path.join(__dirname, 'express.log'),
       maxLogSize: 1000000,
       backups: 3,
       category: 'dev'
     }]
   },
+  //optional
+  log_level: 'INFO',
   //optional
   smtp: {
     service: 'gmail',
@@ -23,10 +25,5 @@ module.exports = {
       user: 'gmail@gmail.com',
       pass: 'somepass312'
     }
-  },
-  //optional
-  node_https: {
-    key: fs.readFileSync('./key'),
-    cert: fs.readFileSync('./cert')
   }
 }

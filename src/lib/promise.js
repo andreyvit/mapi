@@ -5,7 +5,7 @@ import logger from '../logger';
 
 export default function getAsync(url, options) {
   return new Promise(function(resolve, reject) {
-    logger.info(`Grabbing: ${url}`);
+    logger.debug(`Grabbing: ${url}`);
     request.get(url, options, function(err, response, body) {
       if (err) reject(err);
       let resp = {

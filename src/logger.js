@@ -4,7 +4,7 @@ import path from 'path';
 
 import log4js from 'log4js';
 
-import { log } from '../config';
+import { log, log_level } from '../config';
 
 var options = log;
 if (typeof options === 'undefined') {
@@ -23,7 +23,7 @@ if (typeof options === 'undefined') {
 
 log4js.configure(options);
 
-var logger = log4js.getLogger('dev');
-logger.setLevel('DEBUG');
+var logger = log4js.getLogger('mapi');
+logger.setLevel(process.env.LOG_LEVEL || log_level || 'DEBUG');
 
 module.exports = logger;

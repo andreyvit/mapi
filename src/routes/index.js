@@ -1,24 +1,28 @@
 'use strict';
 
-import express from 'express';
+import { Router } from 'express';
 import _each from 'lodash/collection/forEach';
 
+import { Article } from '../db';
 import logger from  '../logger';
 import getAsync from '../lib/promise';
-import { Article } from '../db';
-import { sites, modules } from '../lib/constant';
 import { stripHost } from '../lib/parse';
+import { sites, modules } from '../lib/constant';
 
-var router = express.Router();
+var router = Router();
+
+router.get('/', function(req, res, next) {
+  res.render('index');
+});
+
+router.get('/test_socket/', function(req, res, next) {
+  res.render('test_socket');
+});
 
 router.get('/news/', news);
 router.get('/news/:site/', news);
 router.get('/news/:site/:section/', news);
 router.get('/news/:site/:section/:moduleName/', news);
-
-router.get('/test_socket/', function(req, res, next) {
-  res.render('test_socket');
-});
 
 async function news(req, res, next) {
   let siteNames = [for (site of sites) if (site) stripHost(site)];
@@ -37,11 +41,11 @@ async function news(req, res, next) {
   });
 
   if (invalidSites.length) {
-      // unprocessable, throw correct response code
-      let sites = invalidSites.join(', ');
-      var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
-      err.status = 422;
-      return next(err);
+    // unprocessable, throw correct response code
+    let sites = invalidSites.join(', ');
+    var err = new Error(`Invalid query argument, site '${sites}' not allowed`);
+    err.status = 422;
+    return next(err);
   }
 
   mongoFilter.source = { $in: requestedSites };
@@ -62,7 +66,6 @@ async function news(req, res, next) {
     return next(err);
   }
 
-  console.log(moduleNames);
   mongoFilter.module = { $in: moduleNames };
 
   let news;

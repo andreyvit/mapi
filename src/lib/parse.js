@@ -1,3 +1,5 @@
+'use strict';
+
 import url from 'url';
 
 function stripHost(testUrl) {
