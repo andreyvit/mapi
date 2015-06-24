@@ -7,4 +7,4 @@ export NODE_ENV="production"
 
 cd $APP_DIR
 
-exec npm start
+exec node --harmony ./dist/app.js
