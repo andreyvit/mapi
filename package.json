@@ -41,6 +41,7 @@
     "serve-favicon": "~2.2.0",
     "sinon": "^1.15.3",
     "socket.io-browserify": "^0.9.6",
+    "supertest": "^1.0.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

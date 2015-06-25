@@ -1,6 +1,7 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import { db } from '../config';
 
 var Schema = mongoose.Schema;
 

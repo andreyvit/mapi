@@ -22,7 +22,7 @@ if (typeof db === 'undefined') {
 }
 
 
-function initApp(dbString=db) {
+function initApp(dbString=db, runServer=true) {
   var app = express();
   app.http().io();
 
@@ -49,7 +49,7 @@ function initApp(dbString=db) {
   mongoose.connection.on('error', logger.error);
   mongoose.connection.on('disconnected', connect);
 
-  news.init(app);
+  // news.init(app);
 
   if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
@@ -89,19 +89,21 @@ function initApp(dbString=db) {
   app.set('port', port);
 
   logger.info(`[SERVER] Environment: ${app.get('env')}`);
-  app.listen(port, '0.0.0.0', function() {
+  let server = app.listen(port, '0.0.0.0', function() {
     let host = this.address();
     logger.info(`[SERVER] Started on ${host.address}:${host.port}`);
   });
 
-  process.on('SIGTERM', function () {
-    logger.info("[SERVER] Closing nodejs application ...");
-    app.close();
-  });
-
-  app.on('close', function () {
+  server.on('close', function() {
     logger.info("[SERVER] Closed nodejs application, disconnecting mongodb ...");
     mongoose.disconnect();
+  });
+
+  app.set('server', server);
+
+  process.on('SIGTERM', function () {
+    logger.info("[SERVER] Closing nodejs application ...");
+    server.close();
   });
 
   function normalizePort(val) {

@@ -5,7 +5,7 @@ import mocha from 'mocha';
 describe('Parse Tests', function() {
 
   it('Test the host parsing', function() {
-    var testCases = [
+    let testCases = [
       // Basic test
       { testValue: 'freep.com', result: 'freep' },
       { testValue: 'http://freep.com', result: 'freep' },
@@ -24,10 +24,10 @@ describe('Parse Tests', function() {
       { testValue: 123123, result: '' }
     ];
 
-    for (var i = 0; i < testCases.length; i++) {
-      var testCase = testCases[i];
+    for (let i = 0; i < testCases.length; i++) {
+      let testCase = testCases[i];
 
-      var result = parse.stripHost(testCase.testValue);
+      let result = parse.stripHost(testCase.testValue);
       assert.equal(result, testCase.result);
     }
   });
