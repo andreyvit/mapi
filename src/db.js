@@ -2,13 +2,7 @@
 
 import mongoose from 'mongoose';
 
-import { db } from '../config';
-
 var Schema = mongoose.Schema;
-
-if (typeof db === 'undefined') {
-  throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
-}
 
 const defaults = {
   server: {
@@ -16,8 +10,8 @@ const defaults = {
   }
 };
 
-function connect(options=defaults) {
-  mongoose.connect(db, options);
+function connect(dbString=db, options=defaults) {
+  mongoose.connect(dbString, options);
 }
 
 function disconnect() {

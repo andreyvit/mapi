@@ -1,6 +1,6 @@
-var parse = require('../../dist/lib/parse');
-var assert = require('chai').assert;
-var mocha = require('mocha');
+import parse from '../../lib/parse';
+import { assert } from 'chai';
+import mocha from 'mocha';
 
 describe('Parse Tests', function() {
 

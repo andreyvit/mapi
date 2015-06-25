@@ -23,7 +23,7 @@ var config = require('./config');
 var jsSrc = './public/js/src/';
 var jsBundle = ['test_socket.js'];
 
-var testFiles = './tests/**/*.js';
+var testFiles = './dist/tests/**/*.js';
 
 gulp.task('sass', function() {
   var cssSrc = './public/scss/';
