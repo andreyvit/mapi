@@ -21,7 +21,6 @@ if (typeof db === 'undefined') {
   throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
 }
 
-
 function initApp(dbString=db, runServer=true) {
   var app = express();
   app.http().io();
@@ -115,7 +114,6 @@ function initApp(dbString=db, runServer=true) {
 
   return app;
 }
-
 
 if (require.main === module) {
   module.exports = initApp();

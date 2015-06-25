@@ -3,6 +3,11 @@
 import mongoose from 'mongoose';
 import { db } from '../config';
 
+if (typeof db === 'undefined') {
+  throw new Error("`db` key in config.js is required to connect to mongodb, ex: db: 'mongodb://localhost:27017/db'");
+}
+
+
 var Schema = mongoose.Schema;
 
 const defaults = {
