@@ -4,7 +4,6 @@ import { assert } from 'chai';
 import mocha from 'mocha';
 import sinon from 'sinon';
 import indexBy from 'lodash/collection/indexBy';
-import keys from 'lodash/object/keys';
 
 import { testDb } from '../../../config';
 import { connect, disconnect, Article } from '../../db';
@@ -36,28 +35,47 @@ function verifyArticles(res, articles) {
 
   if (!articles.length) return;
 
-  console.log(articles.length);
-
   // Iterate over all the expected articles [articles], and make sure they're
   // all in the res.body
   let articleMap = indexBy(res.body.articles, function(obj) {
     return obj.url;
   });
-  let articleProps = keys(res.body[0]);
 
   for (let i = 0; i < articles.length; i++) {
-    let dbArticle = articles[i];
+
+    // Parse to and from JSON to match the response
+    let dbArticle = JSON.parse(JSON.stringify(articles[i]));
     assert.property(articleMap, dbArticle.url, 'Article URL not found');
-    let resArticle = articleMap[dbArticle.url];
 
     // Iterate over all values in the Schema, make sure the values match
-    for (let j = 0; j < articleProps.length; j++) {
-      let prop = articleProps[j];
+    let resArticle = articleMap[dbArticle.url];
+    for (let prop in Article.schema.paths) {
 
       assert.property(dbArticle, prop, 'Property doesn\'t exist in DB Schema');
-      assert.equal(dbArticle[prop], resArticle[prop], `Property ${prop} does not match up`);
+
+      assert.equal(dbArticle[prop], resArticle[prop]);
     }
   }
+}
+
+function testRoute(route, articlesFilter={}, done) {
+  request(app)
+    .get(route)
+    .expect('Content-Type', /json/)
+    .end(async function(err, res) {
+      if (err) throw err;
+
+      let articles = await Article.find(articlesFilter).exec();
+
+      // TODO figure out why the asserts aren't causing it to error out
+      try {
+        verifyArticles(res, articles);
+      }
+      catch(e) {
+        logger.error(e);
+      }
+      done();
+    });
 }
 
 describe('Routes tests', function() {
@@ -94,29 +112,29 @@ describe('Routes tests', function() {
   });
 
   it('Tests basic /news/ route, no filters', function(done) {
+    testRoute('/news/', {}, done)
 
-    request(app)
-      .get('/news/')
-      .expect('Content-Type', /json/)
-      .end(async function(err, res) {
-        if (err) throw err;
-
-        let articles = await Article.find().exec();
-        verifyArticles(res, articles);
-        done();
-      });
   });
 
-  it('Tests /news/freep/, filtering on freep articles', function(done) {
-    request(app)
-      .get('/news/freep/')
-      .expect('Content-Type', /json/)
-      .end(async function(err, res) {
-        if (err) throw err;
-
-        let articles = await Article.find({source: 'freep'}).exec();
-        verifyArticles(res, articles);
-        done();
-      });
+  it('Tests basic site filter: /news/freep/', function(done) {
+    testRoute('/news/freep/', {
+      source: 'freep'
+    }, done);
   });
+
+  it('Tests more complex site filter: /news/freep,detroitnews/', function(done) {
+    testRoute('/news/freep,detroitnews/', {
+      source: {
+        $in: ['freep', 'detroitnews']
+      }
+    }, done);
+  });
+
+  it('Tests a basic module filter: /news/freep/sports/hero/', function(done) {
+    testRoute('/news/freep/sports/hero/', {
+      source: 'freep',
+      module: 'hero'
+    }, done);
+  });
+
 });

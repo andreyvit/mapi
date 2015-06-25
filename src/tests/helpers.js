@@ -31,7 +31,7 @@ function generateArticles(opts={}, numArticles=50) {
   for (let i = 0; i < numArticles; i++) {
     articles.push({
       caption: Chance.string(),
-      img_url: undefined,
+      img_url: '',
       module: getRandomModule(),
       section: Chance.string(),
       subsection: Chance.string(),
