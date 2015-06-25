@@ -58,12 +58,12 @@ function verifyArticles(res, articles) {
   }
 }
 
-function testRoute(route, articlesFilter={}, done) {
+function testValidRoute(route, articlesFilter={}, done) {
   request(app)
     .get(route)
     .expect('Content-Type', /json/)
     .end(async function(err, res) {
-      if (err) throw err;
+      if (err) throw done(err);
 
       let articles = await Article.find(articlesFilter).exec();
 
@@ -112,18 +112,18 @@ describe('Routes tests', function() {
   });
 
   it('Tests basic /news/ route, no filters', function(done) {
-    testRoute('/news/', {}, done)
+    testValidRoute('/news/', {}, done)
 
   });
 
   it('Tests basic site filter: /news/freep/', function(done) {
-    testRoute('/news/freep/', {
+    testValidRoute('/news/freep/', {
       source: 'freep'
     }, done);
   });
 
   it('Tests more complex site filter: /news/freep,detroitnews/', function(done) {
-    testRoute('/news/freep,detroitnews/', {
+    testValidRoute('/news/freep,detroitnews/', {
       source: {
         $in: ['freep', 'detroitnews']
       }
@@ -131,10 +131,52 @@ describe('Routes tests', function() {
   });
 
   it('Tests a basic module filter: /news/freep/sports/hero/', function(done) {
-    testRoute('/news/freep/sports/hero/', {
+    testValidRoute('/news/freep/sports/hero/', {
       source: 'freep',
       module: 'hero'
     }, done);
+  });
+
+  it('Tests a complex moudule filter: /news/freep/sports/hero,headline-grid/', function(done) {
+    testValidRoute('/news/freep/sports/hero,headline-grid/', {
+      source: 'freep',
+      module: {
+        $in: ['hero', 'headline-grid']
+      }
+    }, done);
+  });
+
+  it('Tests a complex site and module filter: /news/freep,detroitnews/sports/hero,headline-grid/', function(done) {
+    testValidRoute('/news/freep,detroitnews/sports/hero,headline-grid/', {
+      source: {
+        $in: ['freep', 'detroitnews']
+      },
+      module: {
+        $in: ['hero', 'headline-grid']
+      }
+    }, done);
+  });
+
+  it('Tests invalid site filters', function(done) {
+    request(app)
+      .get('/news/asdfasdf/')
+      .expect(422)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        done();
+      });
+  });
+
+  it('Tests invalid module filtes', function(done) {
+    request(app)
+      .get('/news/freep/sports/asdasdfasdf/')
+      .expect(422)
+      .end(function(err, res) {
+        if (err) return done(err);
+
+        done();
+      });
   });
 
 });

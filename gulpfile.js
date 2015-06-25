@@ -83,6 +83,10 @@ gulp.task('mocha', function() {
 
 gulp.task('default', ['sass', 'babel', 'browserify']);
 
+gulp.task('test', ['babel'], function() {
+  gulp.start('mocha');
+});
+
 function bundlejs(file, bcb, src, dist) {
   if (typeof src === 'undefined') src = jsSrc;
   if (typeof dist === 'undefined') dist = './public/js/dist/';
