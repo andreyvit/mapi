@@ -12,4 +12,4 @@ RUN npm install -g gulp
 RUN npm install
 RUN gulp
 
-CMD ["npm", "start"]
+CMD ["node", "--harmony", "./dist/app"]
