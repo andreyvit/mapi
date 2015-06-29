@@ -1,0 +1,99 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:us-west-2:936856385821:task-definition/mapi:12",
+  "status": "ACTIVE",
+  "revision": 12,
+  "containerDefinitions": [
+    {
+      "volumesFrom": [],
+      "portMappings": [],
+      "command": [],
+      "environment": [],
+      "essential": true,
+      "entryPoint": [],
+      "links": [],
+      "mountPoints": [
+        {
+          "containerPath": "/data/db",
+          "sourceVolume": "dbdata",
+          "readOnly": false
+        }
+      ],
+      "memory": 330,
+      "name": "mongodb",
+      "cpu": 10,
+      "image": "mongo:3.1.4"
+    },
+    {
+      "volumesFrom": [],
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "command": [],
+      "environment": [],
+      "essential": true,
+      "entryPoint": [],
+      "links": [
+        "mongodb"
+      ],
+      "mountPoints": [],
+      "memory": 330,
+      "name": "mapi",
+      "cpu": 10,
+      "image": "neurosnap/mapi:0.0.3"
+    },
+    {
+      "volumesFrom": [],
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 443,
+          "containerPort": 443,
+          "protocol": "tcp"
+        }
+      ],
+      "command": [
+        "/etc/nginx/run.sh"
+      ],
+      "environment": [],
+      "essential": true,
+      "entryPoint": [],
+      "links": [
+        "mapi"
+      ],
+      "mountPoints": [
+        {
+          "containerPath": "/etc/nginx",
+          "sourceVolume": "nginx-conf",
+          "readOnly": false
+        }
+      ],
+      "memory": 330,
+      "name": "nginx",
+      "cpu": 10,
+      "image": "nginx:1.9.2"
+    }
+  ],
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": null
+      },
+      "name": "dbdata"
+    },
+    {
+      "host": {
+        "sourcePath": "/data/nginx"
+      },
+      "name": "nginx-conf"
+    }
+  ],
+  "family": "mapi"
+}
