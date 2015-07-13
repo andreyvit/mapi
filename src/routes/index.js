@@ -70,7 +70,7 @@ async function news(req, res, next) {
 
   let news;
   try {
-    news = await Article.find(mongoFilter).exec();
+    news = await Article.find(mongoFilter).sort({ created_at: -1 }).exec();
   } catch(err) {
     var err = new Error(err);
     err.status = 500;

@@ -33,3 +33,4 @@ public/js/dist/
 public/css/
 dist/
 out.txt
+*.swp
